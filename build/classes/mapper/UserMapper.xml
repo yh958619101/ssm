@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.UserDao"> 
+<!--
+    	1，size:表示缓存cache中能容纳的最大元素数。默认是1024；
+    	2，flushInterval:定义缓存刷新周期，以毫秒计；
+     	3，eviction:定义缓存的移除机制；默认是LRU(least recently userd，最近最少使用),还有FIFO(first in first out，先进先出)
+     	4，readOnly:默认值是false，假如是true的话，缓存只能读。
+     -->
+	<cache size="1024" flushInterval="60000" eviction="LRU" readOnly="false"/>
+<resultMap type="Test" id="selects3">
+		<result property="name" column="name"/>
+		<result property="time" column="time"/>
+	</resultMap>
+<resultMap type="User" id="userResult">
+<result   property="id" column="id"/>
+<result   property="username" column="username"/>
+<result   property="password" column="password"/>
+<result   property="status" column="status"/>
+ <!-- <association property="area" column="area_id" select="dao.AreaDao.showone"></association>  -->
+</resultMap>
+<!-- 查询用户表 -->
+	<select id="show"  resultMap="userResult" >
+select *  from t_able
+</select>
+
+<select id="findOneToOne" resultMap="selects3">
+		<!-- select * from task_model_relation m, -->
+select  m.name,count(model_id) time from  
+model m,task_model_relation t where m.id = t.model_id GROUP BY t.model_id <!-- desc -->
+	</select>
+		<select id="findSome" resultMap="selects3" parameterType="Map" >
+select  m.name,count(model_id) time from  model m,
+task_model_relation t where m.id = t.model_id GROUP BY t.model_id  HAVING m.name LIKE '%${name}%'
+
+	</select>
+</mapper> 
